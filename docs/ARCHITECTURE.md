@@ -1,127 +1,93 @@
 # Tic Tac Toe React Frontend – Architecture Overview
 
-## System Architecture Overview
-This is a single-page React application with no backend. The application renders a modern Ocean Professional UI with a header, a status panel, a 3x3 board, and a restart action. All game state resides in memory within the App component. Game rules are implemented in pure functions in src/utils/gameLogic.js for easy testing and reuse. Minimal audit-style logging is implemented in src/utils/auditLogger.js and invoked by App to record actions.
+## System Overview
+The application is a single-page React application (SPA) with no backend. It renders a modern Ocean Professional UI consisting of a header, a status panel with live updates, a 3x3 board, and a restart action. All game state is held in-memory within the App component. Game rules are encapsulated as pure functions in src/utils/gameLogic.js to maximize testability. A lightweight audit-style logger in src/utils/auditLogger.js emits structured console logs for actions and errors.
 
 Quality attributes:
-- Simplicity: Minimal component hierarchy for clarity and maintainability.
-- Testability: Pure logic functions; UI tested with React Testing Library.
-- Accessibility: Keyboard-navigable buttons with ARIA labels and focus-visible styling.
-- Observability: Structured console logs for demo traceability.
-- Theming: Centralized style variables and classes in styles/theme.css.
+- Simplicity: A shallow component hierarchy and pure utilities reduce complexity.
+- Testability: Pure computation functions and deterministic state transitions enable robust unit tests.
+- Accessibility: Buttons, ARIA labels, and focus-visible styling support keyboard and screen reader users.
+- Observability: Console-based structured logs provide basic traceability in the absence of a backend.
+- Theming: Centralized theme tokens and classes in styles/theme.css ensure consistency and easy tuning.
 
-## Component Design and State Management
-### Top-Level Components
-- App (src/App.jsx): Owns game state (board array of length 9; currentPlayer). Derives winner and draw via compute functions. Handles user interactions (handleMove, handleRestart) with validation and logging. Renders status, Board, and actions.
-- Board (src/components/Board.jsx): Presentational component mapping nine Square components. Disables interaction when game is finished or when a square is occupied.
-- Square (src/components/Square.jsx): Button representing a single cell. Emits onClick to request a move. Shows current value (X/O/empty).
+## Architecture Diagram (Textual)
+- Browser (User)
+  - React SPA (App.jsx)
+    - Status Banner (status-card)
+    - Board (Board.jsx)
+      - 9x Square (Square.jsx)
+    - Restart Control (button)
+  - Utilities
+    - gameLogic.js (calculateWinner, isDraw, isValidMove, initialBoard, getNextPlayer)
+    - auditLogger.js (auditLog)
+  - Styles
+    - styles/theme.css (Ocean Professional tokens and component classes)
 
-### State and Derived Data
-- State:
+Data and control flow:
+- User interacts with Square (button) → Board forwards index → App.handleMove(index)
+- App validates via isValidMove and updates state or logs move_ignored
+- App recomputes winner/draw and advances turn when applicable
+- Restart triggers state reset and an audit-style restart log
+
+## Component Design (Board, Square/Cell, Game Controller/State, Status Banner, Restart)
+- App (src/App.jsx): Owns board and currentPlayer state; derives winner and draw. Implements handleMove and handleRestart with try/catch and audit logging. Renders header, status card, Board, and restart button.
+- Board (src/components/Board.jsx): Presentational grid mapping nine Square components. Forwards onMove(index). Disables interaction when the game is finished or a cell is occupied.
+- Square (src/components/Square.jsx): A button representing a cell. Renders the current value and exposes a click handler. Accessible label includes index and content.
+- Status Banner: A themed card displaying “Current Player,” “Winner,” or “Draw,” and a colored status dot.
+- Restart: A themed button below the board resetting state to initial values.
+
+## State Management Approach
+- State
   - board: Array(9) of 'X' | 'O' | null
   - currentPlayer: 'X' | 'O'
-- Derived:
-  - winner: 'X' | 'O' | null (calculateWinner(board))
-  - draw: boolean (isDraw(board, winner))
+- Derived
+  - winner: 'X' | 'O' | null via calculateWinner(board)
+  - draw: boolean via isDraw(board, winner)
+- Effects
+  - handleMove(index): validates input, writes to board, logs place_mark and potentially turn_advance, and ends interaction on win/draw.
+  - handleRestart(): resets board and player to initial values and logs restart.
 
-### Data Flow
-- User clicks a Square → Board forwards onMove(index) → App.handleMove(index)
-- App.validate via isValidMove(board, index, winner)
-- If valid:
-  - App clones board, sets cell to currentPlayer
-  - App logs place_mark
-  - App sets board
-  - App recomputes winner/draw
-  - If no winner/draw, App sets currentPlayer = getNextPlayer(currentPlayer) and logs turn_advance
-- If invalid:
-  - App logs move_ignored with reason
+## Styling/Theming Approach aligned to Ocean Professional
+styles/theme.css defines:
+- Color tokens (primary #3b82f6, secondary #64748b, success #06b6d4, error #EF4444, background #f9fafb, surface #ffffff, text #111827)
+- Radii, shadows, and focus rings
+- Component classes for app layout, status card, board, squares, and buttons
+The UI uses rounded corners, subtle shadows, and smooth transitions with accessible contrast. Focus-visible is applied to ensure keyboard users can track focus.
 
-Sequence (ASCII):
-```
-User
-  |
-  v
-Square (button) --> Board (forwards index) --> App.handleMove(index)
-                                                     |
-                                                     v
-                                          gameLogic.isValidMove
-                                                     |
-                                +--------------------+---------------------+
-                                |                                          |
-                              true                                        false
-                                |                                          |
-                                v                                          v
-                        Update board state                          auditLog(move_ignored)
-                        auditLog(place_mark)
-                        recompute winner/draw
-                        advance turn if needed
-                        auditLog(turn_advance)
-```
+## Data Flow and Game Logic
+- Input: Square index (0–8) via click.
+- Validation: isValidMove enforces index bounds, non-occupied cells, and end-of-game prevention.
+- Winner Detection: calculateWinner scans predefined line combinations for matches.
+- Draw Detection: isDraw returns true when all cells are filled with no winner.
+- Restart: initialBoard and player reset to 'X'.
 
-## Data and Validation
-- Inputs: Square index (0..8) from user clicks.
-- Validation:
-  - isValidMove(board, index, winner) enforces bounds, occupancy, and finished-game rules.
-  - calculateWinner(board) scans rows, columns, diagonals using predefined line sets.
-  - isDraw(board, winner) checks full board with no winner.
-- Restart logic resets board to initialBoard() and currentPlayer to 'X'.
-
-## Error Handling Strategy
-- App.handleMove and App.handleRestart are wrapped in try/catch to capture runtime errors.
-- On error, the app:
-  - Logs a technical error entry via auditLog('ERROR', 'move_error' | 'restart_error', { message, stack })
-  - Fails gracefully without crashing the UI
-
-## UI/UX and Style Guide Alignment
-- Ocean Professional theme defined in src/styles/theme.css
-- Rounded corners, card-like status, focused rings, hover transitions
-- Accessible ARIA roles and labels: banner, main, contentinfo, aria-live status updates, labeled board and squares
+## Validation, Error Handling, and Audit
+- Validation: isValidMove prevents invalid state transitions.
+- Error Handling: try/catch in handleMove and handleRestart logs errors to audit with event move_error or restart_error and preserves UI responsiveness.
+- Audit: auditLogger.js prints structured logs with an ISO timestamp, action type, event, and metadata. Attribution defaults to "anonymous-user." No persistence is used.
 
 ## Testing Strategy
 - Unit tests (src/App.test.jsx):
-  - gameLogic: calculateWinner rows/diagonals; isDraw when full; isValidMove for occupancy/finished game
-  - UI flows: renders status and board; validates move rules; shows winner; restart clears board
-- Coverage goals: ≥80% overall; near 100% for game logic functions
-- Integration tests: N/A (no backend)
-- Tooling: React Testing Library and jest-dom (configured in src/setupTests.js)
+  - Logic: calculateWinner (rows/diagonals), isDraw (full/no winner), isValidMove (occupied or finished).
+  - UI: Renders status and board; enforces move rules; shows winner; restart clears the board.
+- Coverage goals: At least 80% overall; logic utilities aim near 100%.
+- Integration: Not applicable (no backend).
+- Tooling: React Testing Library and jest-dom via setupTests.js.
 
-## GxP Compliance Mapping
-- Audit Trail: Implemented via auditLogger.js, producing structured JSON logs with ISO timestamps, user, action, event, and metadata. Current scope logs to console only.
-- Validation Controls: Input validation and business rules enforced in gameLogic.js and App.jsx. Turn advancement and move rules are consistently applied.
-- Access Controls: N/A; no users or roles. If expanded, introduce auth and RBAC.
-- Electronic Signatures: N/A; not applicable to a local game without critical data operations.
-- Data Integrity (ALCOA+):
-  - Attributable: Logs include a user field (anonymous-user).
-  - Contemporaneous: Logged at action time.
-  - Original/Accurate/Complete/Consistent: Logs include before/after board states and reasons for ignored moves.
-  - Enduring/Available: N/A without persistence. Future architecture would add a backend log store with durability, retention, and access controls.
+## Operational Considerations
+- Build/Serve: react-scripts for start, test, and build. No external services are required.
+- Preview: Local development server (http://localhost:3000).
+- Observability: Console logs only; no log persistence.
+- Security: No PII; no network calls; no access control necessary in current scope.
 
-## Traceability Matrix (High-Level)
-- REQ-TTT-001 (3x3 grid) → Board.jsx, Square.jsx → App.test.jsx “renders status and board”
-- REQ-TTT-002 (current player) → App.jsx (statusText) → App.test.jsx
-- REQ-TTT-003 (validation) → gameLogic.isValidMove, App.handleMove → App.test.jsx “repeat click ignored”
-- REQ-TTT-004 (winner detection) → gameLogic.calculateWinner → App.test.jsx “shows winner”
-- REQ-TTT-005 (draw detection) → gameLogic.isDraw → App.test.jsx logic tests
-- REQ-TTT-006 (restart) → App.handleRestart → App.test.jsx “restart clears the board”
-- REQ-TTT-007 (theme) → styles/theme.css + class usage → visual review
-- REQ-TTT-008 (audit logs) → auditLogger.js + App.jsx calls → manual console review
-- REQ-TTT-009 (tests) → App.test.jsx → jest pass
-
-## Release Gate Checklist (Architecture/Quality)
-- [ ] Component contracts stable (App, Board, Square)
-- [ ] Logic utilities pure and covered by unit tests
-- [ ] Error handling implemented (try/catch) and audit logs on errors
-- [ ] Theme and accessibility checks verified
-- [ ] Linting clean and tests passing with target coverage
-- [ ] Documentation updated: PRD and Architecture
-- [ ] Forward-looking GxP posture documented for persistence, RBAC, e-signatures
-
-## Future Enhancements (Forward-Looking)
-- Persistence and backend audit trail with immutable storage and retention
-- Authentication and RBAC for multi-user scenarios
-- Session save/resume and match history with durable logs
-- E-signatures for critical operations if scope expands to regulated data
-- Visual and audio accessibility options (high-contrast mode, ARIA live regions for detailed announcements)
+## Traceability and Compliance Notes
+- Traceability: Requirements map to files and tests as listed in the PRD Traceability Matrix.
+- ALCOA+ Adaptation:
+  - Attributable: “anonymous-user” in logs.
+  - Contemporaneous: Logs emitted at action time.
+  - Complete/Consistent/Accurate: Logs include before/after boards and reasons for ignored moves.
+  - Enduring/Available: Not applicable without persistence; potential future backend could add durability and access control.
+- Access Controls and E-Signatures: N/A for a local, non-persistent game.
 
 ## Source References
 - src/App.jsx

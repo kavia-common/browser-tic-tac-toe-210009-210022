@@ -1,138 +1,91 @@
 # Tic Tac Toe React Frontend – Product Requirements Document (PRD)
 
-## Executive Summary
-This document defines the product requirements for a lightweight React-based Tic Tac Toe game playable in the browser. The application implements a modern Ocean Professional theme, provides clear status indicators, validates moves, detects wins and draws, and supports restarting the game. There is no backend or persistence. For GxP mapping, the application adopts a documented stance: certain compliance elements (e.g., durable audit trail, electronic signatures, role-based access control) are Not Applicable (N/A) in the current scope, but a forward-looking approach is outlined should these be added later.
+## Overview
+This document defines the product requirements for a lightweight, browser-based Tic Tac Toe game built with React. The application has no backend or persistence and is designed for two local players sharing one device. It implements a modern Ocean Professional visual theme, validates moves, detects wins and draws, and allows quick restart. To align with GxP-inspired practices in a non-regulated context, the app includes basic validation controls, a minimal console-based audit-style log for actions attributed to an “Anonymous Local User,” and clear documentation of what is out of scope.
 
 ## Goals and Non-Goals
 ### Goals
-- Provide a fully functional local Tic Tac Toe game in the browser.
-- Display a 3x3 grid of squares that can be marked by two local players, X and O, taking turns.
-- Show a clear status indicating the current player, winner, or draw.
-- Validate moves to prevent marking occupied squares and moves after game completion.
-- Detect winner across rows, columns, and diagonals; detect draws when all cells are filled with no winner.
-- Offer a restart button to reset the game to initial state.
-- Apply the Ocean Professional theme for a modern, accessible UI.
-- Produce minimal audit-style logs to the console with ISO timestamps for user actions, suitable for demo traceability.
+- Provide a complete local gameplay loop for Tic Tac Toe with clear feedback.
+- Display a 3x3 grid that supports turn-based marking by X and O.
+- Show status for current player, winner, or draw, updating in real time.
+- Enforce move validation and prevent invalid interactions.
+- Detect wins across rows, columns, and diagonals and detect draws when all cells are filled.
+- Provide an immediate restart action that resets state to initial.
+- Apply the Ocean Professional theme for a polished, modern, and accessible experience.
+- Emit minimal audit-style console logs with ISO timestamps for moves, ignored moves, turn advancement, restart, and errors.
 
 ### Non-Goals
-- No user accounts, authentication, or role-based access control (RBAC).
-- No server-side components, persistence, or databases.
-- No network communication, APIs, or external services.
-- No electronic signature support in current scope.
-- No multi-device synchronization.
+- Authentication, RBAC, or multi-user identity management.
+- Server-side components, persistence, or databases.
+- Networked multiplayer or API integrations.
+- Electronic signatures and regulated data handling.
+- Cross-device synchronization or cloud storage.
 
-## User Personas and User Stories
+## Personas and User Stories
 ### Personas
-- Casual Player: Wants a quick, simple game experience locally in a single browser session.
-- QA/Reviewer: Needs to verify game logic, UI behavior, and minimal audit-style logs for traceability demonstration.
-- Developer/Maintainer: Needs clear, concise code structure and documentation for quick onboarding.
+- Casual Player: Wants a simple, fast, and visually pleasant local Tic Tac Toe session.
+- QA/Reviewer: Verifies gameplay rules, UI accessibility, and the presence of audit-style logs for demonstrable traceability.
+- Developer/Maintainer: Needs a clear architecture, modular game logic, and basic tests for maintainability.
 
 ### User Stories
-- As two local players, we want to click squares alternately to place X and O so that we can play Tic Tac Toe.
-- As a player, I want to see whose turn it is and whether someone has won or the game is a draw so that I can understand the game state at a glance.
-- As a player, I want a restart button so I can quickly start a new game.
-- As a QA/reviewer, I want basic audit-style console logs to show when moves happen and when a restart occurs to support demo traceability.
+- As two local players, we want to alternately mark the 3x3 grid to play Tic Tac Toe.
+- As a player, I want to immediately see whose turn it is and whether the game is won or drawn.
+- As a player, I want a restart button to quickly begin a new round after finishing a game.
+- As a reviewer, I want minimal audit-style console logs for moves and restarts so that I can confirm basic traceability.
 
-## Functional Requirements
-- REQ-TTT-001: The app shall render a 3x3 grid of clickable squares. Each square indicates its current value (X, O, or empty).
-- REQ-TTT-002: The app shall track the current player turn and display it prominently.
-- REQ-TTT-003: The app shall validate moves such that:
-  - A move cannot be made on an occupied square.
-  - A move cannot be made if the game has a winner or is a draw.
-- REQ-TTT-004: The app shall detect winners on any row, column, or diagonal.
-- REQ-TTT-005: The app shall detect draw states when all squares are filled without a winner.
-- REQ-TTT-006: The app shall provide a restart button that clears the board, resets the current player to X, and returns the status to initial.
-- REQ-TTT-007: The app shall apply the Ocean Professional theme, including colors, rounded corners, subtle shadows, and accessible contrasts.
-- REQ-TTT-008: The app shall produce audit-style console logs for:
-  - Place mark action with before/after board states.
-  - Invalid move attempts (ignored) with reason.
-  - Turn advancement.
-  - Restart action with before/after states.
-  - Errors captured in try/catch blocks with message and stack (if available).
-- REQ-TTT-009: The app shall expose unit tests validating game logic and key UI flows (render, move, win, restart).
+## Feature List and Acceptance Criteria
+- REQ-TTT-001: Render a 3x3 grid of clickable squares that display X, O, or empty.
+  - AC-001: On load, nine empty squares are displayed as keyboard-accessible buttons.
+- REQ-TTT-002: Track and display the current player turn, beginning with X.
+  - AC-002: Status displays “Current Player: X” on load; after each valid move it alternates.
+- REQ-TTT-003: Validate moves (no moves on occupied squares or after game completion).
+  - AC-003: Attempting an invalid move makes no UI change and produces a “move_ignored” audit-style log with reason.
+- REQ-TTT-004: Detect winners across rows, columns, and diagonals.
+  - AC-004: Upon a win, status displays “Winner: X|O” and the board becomes non-interactive.
+- REQ-TTT-005: Detect draws when the board is full with no winner.
+  - AC-005: Upon a draw, status displays “Draw” and the board becomes non-interactive.
+- REQ-TTT-006: Provide a restart action that clears the board and resets the current player to X.
+  - AC-006: Clicking “Restart” returns to initial state and emits a “restart_game” audit-style log with before/after.
+- REQ-TTT-007: Apply the Ocean Professional theme, including colors, rounded corners, subtle shadows, and accessible contrasts.
+  - AC-007: Visual inspection confirms theme usage via styles/theme.css and class names in App/Board/Square.
+- REQ-TTT-008: Emit minimal audit-style console logs for place mark, invalid move, turn advance, restart, and errors.
+  - AC-008: Console logs contain ISO timestamp, anonymous user, action type, event, and relevant details.
+- REQ-TTT-009: Provide unit tests for game logic and key UI flows.
+  - AC-009: Tests cover winner/draw detection, invalid move handling, rendering, and restart flows.
 
-## Non-Functional Requirements
-- NFR-TTT-001: Performance: user interactions (clicks, renders) shall update UI within 100ms on typical modern browsers.
-- NFR-TTT-002: Accessibility: core controls (squares, restart) shall be keyboard accessible and labeled.
-- NFR-TTT-003: Maintainability: code shall use modular components (App, Board, Square) and pure game logic utilities for easy testability.
-- NFR-TTT-004: Reliability: move validation and win/draw detection must be deterministic and unit-tested.
-- NFR-TTT-005: Security/Privacy: no PII captured; only anonymous ‘anonymous-user’ is included in audit-style logs; no data leaves the browser.
-- NFR-TTT-006: Observability: audit-style logs utilize ISO timestamps and structured JSON for easy reading during local review.
+## UX/UI Requirements (Ocean Professional theme)
+The experience follows a centered layout with a simple header above the board and the restart action below. The header presents a title and subtitle indicating “Ocean Professional Edition.” The status panel appears as a surface card with a colored status dot and status text that updates live. The board is a centered 3x3 grid using rounded, shadowed buttons that show clear focus rings on keyboard navigation. The restart button sits below the grid with hover and focus-visible states. The theme uses the following core values defined in styles/theme.css: Primary Blue (#3b82f6), Secondary Slate (#64748b), Success Cyan (#06b6d4), Error Red (#EF4444), Background (#f9fafb), Surface (#ffffff), and Text (#111827). All interactive states include smooth transitions, hover elevation, and visible focus rings to support accessibility.
 
-## Acceptance Criteria
-- AC-001: On load, the app shows an empty 3x3 grid, status “Current Player: X,” and a restart button.
-- AC-002: Clicking an empty square marks it with the current player’s symbol and advances turn when appropriate.
-- AC-003: Clicking an occupied square or attempting a move after game completion does nothing; an audit-style “move_ignored” log is produced with reason.
-- AC-004: When three consecutive marks by the same player align in a row, column, or diagonal, the status changes to “Winner: [X|O],” and the board becomes non-interactive.
-- AC-005: When all nine squares are filled with no winner, the status changes to “Draw,” and the board becomes non-interactive.
-- AC-006: Clicking restart resets the board to all empty, sets the current player to X, and updates the status; an audit-style “restart_game” log is produced with before/after states.
-- AC-007: The UI styling follows the Ocean Professional theme as defined in styles/theme.css.
-- AC-008: Unit tests pass for winner detection, draw detection, invalid/valid move validation, and basic UI flows (render, move, win, restart).
-- AC-009: Audit-style logs appear in the browser console with ISO timestamp, action type, event, and structured details.
+## Game Rules and Edge Cases
+Players alternate marking the grid starting with X. A move is only valid on an empty square when no winner or draw has been reached. The game ends immediately on a win or draw; further moves are ignored and logged as “move_ignored.” Edge cases handled include repeated clicks on the same square, attempts to move after game completion, and implicit guarding against out-of-bounds indices via UI, with logical checks present in utilities for completeness.
 
-## UI/UX and Style Guide Alignment (Ocean Professional theme)
-The UI implements the Ocean Professional theme defined in src/styles/theme.css, using:
-- Primary Blue (#3b82f6), Secondary Slate (#64748b), Success Cyan (#06b6d4), Error Red (#EF4444)
-- Background (#f9fafb), Surface (#ffffff), Text (#111827)
-- Rounded corners, subtle drop shadows, and hover/focus states with visible rings
-- A centered grid layout with a header and status panel above, and a restart action below
-Interactive elements use accessible contrasts and focus-visible outlines for keyboard navigation.
+## Non-Functional Requirements (Performance, Accessibility, Security, Reliability)
+- Performance: UI updates for clicks and status changes should feel instantaneous, generally within 100ms on modern hardware.
+- Accessibility: Squares and the restart button are keyboard accessible with ARIA labels and visible focus states; status updates are communicated via aria-live.
+- Security/Privacy: No PII is collected or transmitted; audit-style logs attribute actions to an anonymous local user and remain within the browser console.
+- Reliability: Validation rules enforce consistent behavior; game logic is implemented in pure functions for determinism and testability.
+- Maintainability: Code is modular (App, Board, Square) with pure utilities in utils/gameLogic.js and a centralized theme in styles/theme.css.
+- Observability: Console-based structured logs provide sufficient traceability for this no-backend scope.
 
-## GxP Compliance Mapping (ALCOA+, validation controls, audit trail stance)
-- Attributable: Actions logged with timestamp and user identifier (anonymous-user) via src/utils/auditLogger.js.
-- Legible: Code is modular and documented; variables and components are named clearly.
-- Contemporaneous: Logs are emitted in real-time upon user actions.
-- Original and Accurate: Logs are generated at the time of actions and include before/after states to reflect accurate context.
-- Complete and Consistent: Core user actions (valid/invalid moves, turn advancement, restart, errors) are logged consistently.
-- Enduring and Available: N/A in current scope since logs are console-only and not persisted; documented forward path: add backend logging with storage durability, retention, and RBAC if scope expands.
+## Validation and Error Handling Strategy
+Validation is implemented through isValidMove to prevent illegal moves, while calculateWinner and isDraw provide deterministic outcomes. Error handling uses try/catch in App for move and restart paths; on error, the UI remains responsive and a structured “ERROR” audit-style log is emitted with message and stack if available. The app uses auditLogger.js to write structured console entries with ISO timestamp, user, action type, event, and details. Attribution is “anonymous-user.”
 
-Validation Controls:
-- Input Validation: isValidMove checks array bounds, occupancy, and prevents play after a win.
-- Business Rules: Turn changes only when move valid; winner/draw detection via calculateWinner and isDraw.
-- Error Handling: try/catch around move and restart paths; logs errors to audit trail.
+## Out-of-Scope
+Persistence, backend APIs, or networking are out of scope. Authentication, authorization, RBAC, and electronic signatures are also out of scope. There is no cross-session durability or audit retention policy, and no networked multiplayer or matchmaking.
 
-Access Controls and E-Signatures:
-- N/A in current scope; forward-looking plan: introduce authentication, role checks before critical actions, and electronic signature ceremony if elevated GxP scope is introduced with persistence.
-
-Audit Trail:
-- Implemented locally with structured logs (JSON) containing ISO timestamp, user, action type, event, and details. Future: persist to secure backend store with immutability guarantees, retention policies, and audit reports.
-
-## Testing Strategy and Coverage Goals
-- Unit tests focus on gameLogic.js (winner detection, draw, move validation) and core UI flows in App.test.jsx.
-- Coverage goal: logic utilities target near 100% line coverage; overall project aims for 80%+.
-- Integration/API tests: N/A (no backend).
-- UI tests: Render checks, interaction flows (place mark, win, restart).
-- Validation tests: Ensure invalid moves are prevented; game completion halts further interaction.
-- Tooling: React Testing Library with jest-dom via setupTests.js.
-
-## Traceability Matrix (REQ IDs to components/tests)
-- REQ-TTT-001 → Implementation: Board.jsx, Square.jsx; Verification: App.test.jsx (renders board, buttons)
-- REQ-TTT-002 → Implementation: App.jsx (statusText); Verification: App.test.jsx (status visible)
-- REQ-TTT-003 → Implementation: gameLogic.js:isValidMove, App.jsx:handleMove; Verification: App.test.jsx “repeat click ignored”
-- REQ-TTT-004 → Implementation: gameLogic.js:calculateWinner; Verification: App.test.jsx “enforces move rules and shows winner”
-- REQ-TTT-005 → Implementation: gameLogic.js:isDraw; Verification: App.test.jsx “isDraw true when board filled without winner”
-- REQ-TTT-006 → Implementation: App.jsx:handleRestart; Verification: App.test.jsx “restart clears the board”
-- REQ-TTT-007 → Implementation: styles/theme.css and usage in App/Board/Square; Verification: visual review and class usage
-- REQ-TTT-008 → Implementation: auditLogger.js and App.jsx auditLog calls; Verification: manual console review during tests/run
-- REQ-TTT-009 → Implementation: App.test.jsx and utilities; Verification: jest results passing locally
+## Traceability Matrix
+- REQ-TTT-001 → Implementation: Board.jsx, Square.jsx → Verification: App.test.jsx “renders status and board”
+- REQ-TTT-002 → Implementation: App.jsx (statusText) → Verification: App.test.jsx
+- REQ-TTT-003 → Implementation: gameLogic.isValidMove, App.handleMove → Verification: App.test.jsx “repeat click ignored”
+- REQ-TTT-004 → Implementation: gameLogic.calculateWinner → Verification: App.test.jsx winner tests
+- REQ-TTT-005 → Implementation: gameLogic.isDraw → Verification: App.test.jsx draw tests
+- REQ-TTT-006 → Implementation: App.handleRestart → Verification: App.test.jsx restart test
+- REQ-TTT-007 → Implementation: styles/theme.css + class usage → Verification: visual review
+- REQ-TTT-008 → Implementation: auditLogger.js + App.jsx calls → Verification: console review
+- REQ-TTT-009 → Implementation: App.test.jsx + utilities → Verification: jest pass
 
 ## Release Criteria
-- All acceptance criteria met and verified.
-- All unit tests pass with target coverage thresholds met or exceeded.
-- Linting passes without errors.
-- Manual exploratory testing confirms move validation, win/draw detection, and restart behavior.
-- Visual verification confirms Ocean Professional theme adherence and accessible focus states.
-- Documented GxP stance with forward-looking compliance plan is present.
-
-## Release Gate Checklist
-- [ ] Functional: Board renders, moves valid, winner/draw detection, restart works
-- [ ] Non-Functional: Accessibility affordances present; performance acceptable
-- [ ] Tests: All unit tests pass; coverage ≥ 80% overall and near 100% for game logic
-- [ ] Linting: No lint errors; warnings triaged
-- [ ] GxP Mapping: ALCOA+ mapping documented; validation controls and audit logging implemented (console)
-- [ ] Security/Privacy: No PII; anonymous user only; no data egress
-- [ ] Documentation: PRD and Architecture docs updated and stored under docs/
-- [ ] Sign-offs: Product/QA review completed
+All acceptance criteria are met. Unit tests pass with target coverage thresholds. Linting is clean. Manual checks confirm validation and visual adherence to the Ocean Professional theme. The GxP-inspired stance is documented, highlighting which controls are N/A for a frontend-only game and the forward path if scope expands.
 
 ## Appendices
 - Code References:
