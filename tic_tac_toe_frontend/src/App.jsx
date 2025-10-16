@@ -149,6 +149,7 @@ export default function App() {
           aria-atomic="true"
           data-testid="status-panel"
         >
+          <h2 className="sr-only">Game status</h2>
           <span
             className={`status-dot ${winner ? 'status-win' : draw ? 'status-draw' : 'status-play'}`}
           />
