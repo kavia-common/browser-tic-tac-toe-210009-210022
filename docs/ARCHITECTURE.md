@@ -97,3 +97,7 @@ The UI uses rounded corners, subtle shadows, and smooth transitions with accessi
 - src/utils/auditLogger.js
 - src/styles/theme.css
 - src/App.test.jsx
+
+## Related Documentation
+For the detailed quality approach, coverage targets, and traceability mapping, see the Test Strategy:
+- docs/TEST_STRATEGY.md
