@@ -2,7 +2,13 @@ import React, { useMemo, useState, useCallback } from 'react';
 import './styles/theme.css';
 import Board from './components/Board';
 import { auditLog } from './utils/auditLogger';
-import { calculateWinner, isDraw, getNextPlayer, initialBoard, isValidMove } from './utils/gameLogic';
+import {
+  calculateWinner,
+  isDraw,
+  getNextPlayer,
+  initialBoard,
+  isValidMove,
+} from './utils/gameLogic';
 
 /**
 // ============================================================================
@@ -143,7 +149,9 @@ export default function App() {
           aria-atomic="true"
           data-testid="status-panel"
         >
-          <span className={`status-dot ${winner ? 'status-win' : draw ? 'status-draw' : 'status-play'}`} />
+          <span
+            className={`status-dot ${winner ? 'status-win' : draw ? 'status-draw' : 'status-play'}`}
+          />
           <span className="status-text">{statusText}</span>
         </section>
 

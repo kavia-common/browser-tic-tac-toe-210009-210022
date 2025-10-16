@@ -18,7 +18,7 @@ describe('gameLogic', () => {
   });
 
   test('isDraw true when board filled without winner', () => {
-    const board = ['X','O','X','X','O','O','O','X','X'];
+    const board = ['X', 'O', 'X', 'X', 'O', 'O', 'O', 'X', 'X'];
     expect(calculateWinner(board)).toBeNull();
     expect(isDraw(board, null)).toBe(true);
   });
@@ -27,8 +27,8 @@ describe('gameLogic', () => {
     const board = initialBoard();
     board[0] = 'X';
     expect(isValidMove(board, 0, null)).toBe(false); // occupied
-    expect(isValidMove(board, 1, 'X')).toBe(false);  // already has winner
-    expect(isValidMove(board, 1, null)).toBe(true);  // valid
+    expect(isValidMove(board, 1, 'X')).toBe(false); // already has winner
+    expect(isValidMove(board, 1, null)).toBe(true); // valid
   });
 });
 

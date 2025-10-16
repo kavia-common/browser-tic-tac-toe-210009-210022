@@ -10,7 +10,7 @@
   --button-text: #ffffff;
 }
 
-[data-theme="dark"] {
+[data-theme='dark'] {
   /* Dark theme colors */
   --bg-primary: #1a1a1a;
   --bg-secondary: #282c34;
@@ -26,7 +26,9 @@
   background-color: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100vh;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 .App-logo {
