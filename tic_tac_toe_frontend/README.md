@@ -1,82 +1,37 @@
-# Lightweight React Template for KAVIA
+# Tic Tac Toe – Ocean Professional
 
-This project provides a minimal React template with a clean, modern UI and minimal dependencies.
+A lightweight React implementation of Tic Tac Toe with a modern Ocean Professional theme, basic audit-style console logging, and minimal tests.
 
 ## Features
+- 3x3 grid with clickable squares
+- Current player indicator
+- Win and draw detection (rows, columns, diagonals)
+- Restart button
+- Ocean Professional styling (rounded corners, shadows, subtle gradient)
+- Minimal audit-style console logs with ISO timestamps on moves and restart
 
-- **Lightweight**: No heavy UI frameworks - uses only vanilla CSS and React
-- **Modern UI**: Clean, responsive design with KAVIA brand styling
-- **Fast**: Minimal dependencies for quick loading times
-- **Simple**: Easy to understand and modify
+## Project Layout
+- src/App.jsx – Main application (state, status, restart)
+- src/components/Board.jsx – 3x3 board
+- src/components/Square.jsx – Board cell
+- src/utils/gameLogic.js – Pure helpers (winner, draw, validation)
+- src/utils/auditLogger.js – Console audit-style logger
+- src/styles/theme.css – Ocean Professional theme
+- src/App.test.jsx – Basic unit tests
 
 ## Getting Started
+- npm start – Start dev server (http://localhost:3000)
+- npm test – Run unit tests
+- npm run build – Production build
 
-In the project directory, you can run:
+## Audit Notes
+This is a frontend-only demo. Audit-style entries are printed to the browser console with:
+- ISO timestamp, user (anonymous-user), action type, event name
+- Minimal metadata (e.g., before/after board states)
 
-### `npm start`
+No external services or persistence are used.
 
-Runs the app in development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-### `npm test`
-
-Launches the test runner in interactive watch mode.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-## Customization
-
-### Colors
-
-The main brand colors are defined as CSS variables in `src/App.css`:
-
-```css
-:root {
-  --kavia-orange: #E87A41;
-  --kavia-dark: #1A1A1A;
-  --text-color: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --border-color: rgba(255, 255, 255, 0.1);
-}
-```
-
-### Components
-
-This template uses pure HTML/CSS components instead of a UI framework. You can find component styles in `src/App.css`. 
-
-Common components include:
-- Buttons (`.btn`, `.btn-large`)
-- Container (`.container`)
-- Navigation (`.navbar`)
-- Typography (`.title`, `.subtitle`, `.description`)
-
-## Learn More
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Assumptions
+- Two-player local game (no auth)
+- No backend, no database
+- Basic input validation on moves
