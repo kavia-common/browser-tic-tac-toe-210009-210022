@@ -87,6 +87,16 @@ Persistence, backend APIs, or networking are out of scope. Authentication, autho
 ## Release Criteria
 All acceptance criteria are met. Unit tests pass with target coverage thresholds. Linting is clean. Manual checks confirm validation and visual adherence to the Ocean Professional theme. The GxP-inspired stance is documented, highlighting which controls are N/A for a frontend-only game and the forward path if scope expands.
 
+## Release Gate Checklist
+- [ ] All functional acceptance criteria met (REQ-TTT-001..009)
+- [ ] Unit tests passing with ≥80% overall coverage; utilities near 100%
+- [ ] Linting clean (eslint.config.mjs) and Prettier check passes
+- [ ] Manual visual check of Ocean Professional theme (styles/theme.css) completed
+- [ ] Accessibility basics verified (keyboard focus, aria-live status)
+- [ ] Audit-style logs observed in console for moves, ignored moves, turn advance, restart, and errors
+- [ ] Documentation updated (PRD, Architecture, Testing Strategy, Traceability)
+- [ ] Known security advisories documented; no external services used
+
 ## Appendices
 - Code References:
   - src/App.jsx
