@@ -27,6 +27,17 @@ A lightweight React implementation of Tic Tac Toe with a modern Ocean Profession
 - npm test – Run unit tests
 - npm run build – Production build
 
+## Dependency and Security Notes
+
+- Direct dependencies updated to latest compatible minor/patch versions (React 18.3.x).
+- Legacy "eslintConfig" in package.json removed; ESLint flat config (eslint.config.mjs) is the source of truth.
+- Added safe npm overrides to mitigate critical/high transitive advisories in the CRA toolchain:
+  - form-data >= 3.0.4, brace-expansion >= 2.0.2, @babel/runtime/helpers >= 7.26.10,
+    http-proxy-middleware >= 2.0.9, on-headers >= 1.0.2.
+- Remaining advisories tied to react-scripts 5.x chain (svgo 1.x, @svgr/*) are acknowledged; resolution typically requires migrating off CRA.
+
+See docs/static-analysis-report-latest.md for details.
+
 ## Audit Notes
 
 This is a frontend-only demo. Audit-style entries are printed to the browser console with:

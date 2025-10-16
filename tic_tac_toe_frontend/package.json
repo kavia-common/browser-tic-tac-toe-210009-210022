@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-scripts": "^5.0.1"
   },
   "scripts": {
@@ -19,8 +19,13 @@
     "format": "prettier . --write",
     "format:check": "prettier . --check"
   },
-  "eslintConfig": {
-    "extends": "react-app"
+  "overrides": {
+    "form-data": "^3.0.4",
+    "brace-expansion": "^2.0.2",
+    "@babel/runtime": "^7.26.10",
+    "@babel/helpers": "^7.26.10",
+    "http-proxy-middleware": "^2.0.9",
+    "on-headers": "^1.0.2"
   },
   "browserslist": {
     "production": [
@@ -35,6 +40,9 @@
     ]
   },
   "devDependencies": {
-    "cross-env": "^7.0.3"
+    "cross-env": "^7.0.3",
+    "prettier": "^3.3.3",
+    "eslint": "^9.13.0",
+    "eslint-plugin-react": "^7.37.2"
   }
 }

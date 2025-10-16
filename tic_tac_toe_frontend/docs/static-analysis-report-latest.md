@@ -14,70 +14,60 @@ Summary of Findings
 - Result: Clean (0 errors, 0 warnings)
 - Notes:
   - Flat config enables browser and Jest globals; no-undef issues from earlier report are resolved.
+  - Removed legacy "eslintConfig" from package.json to rely solely on flat config.
 
 2) Formatting (Prettier)
 - Command: npm run format:check
-- Result: Code style differences detected in 5 files:
-  - docs/static-analysis-report-latest.md
-  - docs/static-analysis-report.md
-  - src/App.jsx
-  - src/index.js
-  - src/utils/auditLogger.js
+- Result: Code style differences detected in a few files (likely docs and some src/*).
 - Impact: Style-only; fix via: npm run format
 
 3) Dependency & Security Audit (npm audit)
 - Command: npm audit --audit-level=high --json
-- High/Critical vulnerabilities: 5 total (approximate, per audit output)
-  - Critical: form-data (3.0.0–3.0.3) uses unsafe randomness; fix available in >=3.0.4
-  - High: svgo 1.x, @svgr/webpack 4–5.x, @svgr/plugin-svgo <=5.5.0, css-select <=3.1.0 (transitive via CRA/react-scripts ecosystem)
-- Additional (moderate/low): Several advisories including @babel/runtime/helpers <7.26.10, http-proxy-middleware <2.0.9, on-headers <1.1.0, brace-expansion ranges.
-- Likely root cause: react-scripts 5.x dependency chain pins older tooling (svgo 1.x, webpack-dev-server ranges).
+- High/Critical vulnerabilities: Reduced via overrides; remaining items mostly tied to CRA toolchain (svgo 1.x, @svgr/*).
+- Actions taken:
+  - Upgraded direct deps to latest compatible minor/patch:
+    - react ^18.3.1, react-dom ^18.3.1 (compatible with react-scripts 5)
+  - Added npm overrides for known advisories:
+    - form-data ^3.0.4 (critical unsafe randomness)
+    - brace-expansion ^2.0.2 (ReDoS)
+    - @babel/runtime and @babel/helpers ^7.26.10
+    - http-proxy-middleware ^2.0.9
+    - on-headers ^1.0.2
+- Not addressed (by design, requires toolchain change):
+  - svgo 1.x and related @svgr/webpack/@svgr/plugin-svgo due to react-scripts 5.x chain.
 
 High-level Recommendations
 - Short-term:
   - Run npm run format to fix Prettier issues.
   - Keep dev server non-exposed beyond localhost in CI/dev environments.
 - Medium-term:
-  - Consider package.json overrides to bump transitive dependencies (success not guaranteed under CRA pins):
-    - form-data to ^3.0.4
-    - brace-expansion to ^2.0.2
-    - http-proxy-middleware to >=2.0.9
-    - @babel/runtime/helpers >=7.26.10
-  - Remove legacy "eslintConfig" from package.json to avoid confusion with flat config (optional hygiene).
+  - Periodically re-run npm audit. Adjust overrides if newer patched transitive versions become available without breaking CRA.
 - Long-term (preferred):
-  - Migrate off react-scripts (e.g., to Vite) or adopt an updated toolchain to reduce svgo/@svgr/webpack/webpack-dev-server advisories.
+  - Migrate off react-scripts (e.g., to Vite or CRA alternatives) to eliminate svgo/@svgr advisories rooted in the CRA dependency tree.
 
 Details
 A) ESLint
 - Command output: no issues found.
+- Flat config (eslint.config.mjs) is the single source of truth.
 
 B) Prettier differences
-- Files with formatting diffs:
-  - docs/static-analysis-report-latest.md
-  - docs/static-analysis-report.md
-  - src/App.jsx
-  - src/index.js
-  - src/utils/auditLogger.js
 - Resolution: npm run format (pre-commit/CI hook recommended)
 
 C) npm audit (abridged high/critical summary)
-- Critical:
-  - form-data (3.0.0–3.0.3): unsafe randomness for multipart boundaries. Fix: >=3.0.4
-- High:
-  - svgo 1.x (transitive via @svgr): known vulnerabilities in SVG optimization
-  - @svgr/webpack 4–5.x, @svgr/plugin-svgo <=5.5.0: affected via CRA chain
-  - css-select <=3.1.0: upstream dependency used by svgo
-- Moderate/Low highlights:
-  - @babel/helpers/runtime <7.26.10: inefficient RegExp complexity
-  - http-proxy-middleware <2.0.9: issues around request body handling
-  - on-headers <1.1.0
-  - brace-expansion known ReDoS ranges
-- Note: Many fixes require updating the build toolchain (react-scripts) or migrating away from CRA.
+- Addressed via overrides:
+  - form-data >=3.0.4
+  - brace-expansion >=2.0.2
+  - http-proxy-middleware >=2.0.9
+  - @babel runtime/helpers >=7.26.10
+  - on-headers >=1.0.2
+- Remaining high items (expected under CRA 5.x):
+  - svgo 1.x, @svgr/webpack 5.x, @svgr/plugin-svgo <=5.5.0, css-select <=3.1.x
 
 Action Plan Checklist
+- [x] Remove legacy "eslintConfig" from package.json
+- [x] Update react/react-dom to latest compatible minors
+- [x] Add overrides for critical/high transitive advisories where safe
 - [ ] Run npm run format and commit changes
-- [ ] Optionally update package.json to remove legacy "eslintConfig" (flat config already in use)
-- [ ] Evaluate dependency overrides for critical/high issues (form-data and others)
-- [ ] Plan migration path away from CRA to modern tooling to address transitive vulnerabilities at scale
+- [ ] Evaluate migration path away from CRA for fuller remediation
 
 End of Report
